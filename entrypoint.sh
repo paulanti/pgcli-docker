@@ -1,9 +1,15 @@
 #!/bin/sh
-database_url=$1
+connection_url=$1
 
-if [ -n "$database_url" ]; then
-    pgcli "$database_url"
+if [ -n "$connection_url" ]; then
+    pgcli "$connection_url"
+elif [ -n "$POSTGRES_PORT_5432_TCP_ADDR" ]; then
+    if [ -z "$POSTGRES_ENV_POSTGRES_USER" ]; then
+	    POSTGRES_ENV_POSTGRES_USER='postgres'
+    fi
+    pgcli postgres://$POSTGRES_ENV_POSTGRES_USER:$POSTGRES_ENV_POSTGRES_PASSWORD@$POSTGRES_PORT_5432_TCP_ADDR:$POSTGRES_PORT_5432_TCP_PORT
 else
-    echo "Database URL missing"
-    echo "Database URL format: postgres://USER:PASSWORD@HOST:PORT/DATABASE"
+    echo "Database connection url missing"
+    echo "connection url format: postgres://USER:PASSWORD@HOST:PORT/DATABASE"
+    echo ""
 fi
